@@ -28,6 +28,8 @@
 | `npm test` | 自動テスト(Vitest) |
 | `npm run build` | 公開用のファイルを `apps/web/dist` に作る |
 | `npm run dev` | 開発用の画面を起動する |
+| `npm run typecheck` | 型の間違いがないか調べる(`npm run build` の中でも実行される) |
+| `npm run sim` | CPUだけで1000ゲーム回して、`docs/research/sim-minimum-001.md` を作り直す |
 
 Node は 20 以上(`.nvmrc` に書いてあります)。
 

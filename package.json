@@ -3,13 +3,19 @@
   "private": true,
   "version": "0.0.0",
   "description": "ドボン(トランプゲーム)をスマホで遊べるWebゲームにするプロジェクト",
-  "engines": { "node": ">=20" },
-  "workspaces": ["apps/*", "packages/*"],
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w @dobon/web",
-    "build": "npm run build -w @dobon/web",
+    "build": "npm run typecheck && npm run build -w @dobon/web",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit -p apps/web"
+    "typecheck": "tsc --noEmit -p packages/core && tsc --noEmit -p packages/cpu && tsc --noEmit -p packages/i18n && tsc --noEmit -p apps/web",
+    "sim": "vite-node packages/cpu/scripts/sim-minimum.ts"
   },
   "devDependencies": {
     "typescript": "~5.6.3",

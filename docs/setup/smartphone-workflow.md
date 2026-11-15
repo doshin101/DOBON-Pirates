@@ -24,7 +24,7 @@
 
 ### A. GitHub(済み)
 
-- リポジトリ:`doshin101/DOBON-Pirates`(非公開)
+- リポジトリ:`doshin101/DOBON-Pirates`(公開。秘密の情報はリポジトリに書かないこと)
 - Claude との連携:済み
 
 ### B. Cloudflare Pages の設定(スマホのブラウザで。M0 のPRをマージしたあとに行う)
