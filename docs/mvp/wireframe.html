@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ドボン MVP ワイヤーフレーム v0.1</title>
+<style>
+  :root { --ink:#222; --sub:#777; --line:#bbb; --bg:#f4f4f4; --accent:#e8590c; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; color:var(--ink); background:#fff; }
+  header { padding:16px; border-bottom:1px solid var(--line); }
+  header h1 { font-size:18px; margin:0 0 4px; }
+  header p { margin:0; font-size:13px; color:var(--sub); line-height:1.6; }
+  .grid { display:flex; flex-wrap:wrap; gap:28px; padding:20px 12px; justify-content:center; }
+  .screen { width:340px; }
+  .screen h2 { font-size:15px; margin:0 0 8px; }
+  .phone { width:340px; height:660px; border:2px solid var(--ink); border-radius:22px; background:var(--bg); position:relative; overflow:hidden; display:flex; flex-direction:column; }
+  .notes { font-size:12.5px; line-height:1.6; color:#444; margin:10px 2px 0; padding-left:18px; }
+  .notes li { margin-bottom:2px; }
+  .notes b { color:var(--accent); }
+  /* 共通部品 */
+  .topbar { height:40px; display:flex; align-items:center; justify-content:space-between; padding:0 12px; border-bottom:1px solid var(--line); font-size:12px; background:#fff; }
+  .btn { border:1.5px solid var(--ink); border-radius:8px; background:#fff; min-height:44px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; }
+  .btn.off { border-color:var(--line); color:#aaa; background:#eee; }
+  .btn.primary { background:var(--ink); color:#fff; }
+  .reason { font-size:10px; color:var(--sub); text-align:center; margin-top:2px; min-height:12px; }
+  .seat { font-size:11px; text-align:center; }
+  .seat .name { font-weight:600; }
+  .stack { width:34px; height:46px; border:1.5px solid var(--ink); border-radius:4px; background:repeating-linear-gradient(45deg,#ddd 0 4px,#fff 4px 8px); margin:3px auto; position:relative; }
+  .stack span { position:absolute; right:-14px; bottom:-6px; background:#fff; border:1px solid var(--ink); border-radius:10px; font-size:10px; padding:0 5px; }
+  .badge { display:inline-block; font-size:10px; border:1.5px solid var(--accent); color:var(--accent); border-radius:4px; padding:0 4px; margin-left:3px; font-weight:700; }
+  .turnmark { outline:2px dashed var(--ink); outline-offset:3px; border-radius:6px; }
+  .table { flex:1; position:relative; }
+  .s-top { position:absolute; top:8px; left:50%; transform:translateX(-50%); }
+  .s-left { position:absolute; top:110px; left:8px; }
+  .s-right { position:absolute; top:110px; right:8px; }
+  .center { position:absolute; top:96px; left:50%; transform:translateX(-50%); width:150px; text-align:center; }
+  .pile { display:flex; gap:14px; justify-content:center; align-items:flex-end; }
+  .card { width:46px; height:66px; border:1.5px solid var(--ink); border-radius:5px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; }
+  .card.big { width:58px; height:82px; font-size:19px; }
+  .window { padding:6px; border:3px solid var(--accent); border-radius:10px; }
+  .window-label { font-size:10px; color:var(--accent); font-weight:700; margin-top:3px; }
+  .playedby { font-size:10px; color:var(--sub); margin-top:4px; }
+  .msg { position:absolute; top:236px; left:0; right:0; text-align:center; font-size:13px; font-weight:600; }
+  .toast { position:absolute; top:262px; left:50%; transform:translateX(-50%); font-size:11px; background:var(--ink); color:#fff; border-radius:12px; padding:3px 10px; white-space:nowrap; }
+  .me { background:#fff; border-top:1px solid var(--line); padding:8px 10px 6px; }
+  .me-head { display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:6px; }
+  .total { font-size:13px; } .total b { font-size:20px; }
+  .hand { display:flex; justify-content:center; height:76px; align-items:flex-end; }
+  .hand .card { margin-left:-6px; }
+  .hand .card:first-child { margin-left:0; }
+  .card.sel { transform:translateY(-10px); border-width:3px; }
+  .card.no { background:#ccc; color:#888; border-color:#999; }
+  .card.blocked { border-style:dashed; color:#aaa; background:#fafafa; }
+  .controls { display:grid; grid-template-columns:1fr 1fr 1fr 96px; gap:6px; margin-top:8px; align-items:start; }
+  .main { width:96px; height:72px; border-radius:36px; border:2.5px solid var(--ink); background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:800; font-size:15px; grid-row:span 1; }
+  .main small { font-size:9px; font-weight:600; color:var(--sub); }
+  .main.dobon { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .main.dobon small { color:#fff; }
+  .main.off { border-color:var(--line); color:#aaa; background:#eee; }
+  .log { height:26px; border-top:1px solid var(--line); font-size:10px; color:var(--sub); display:flex; align-items:center; padding:0 10px; background:#fff; }
+  .overlay { position:absolute; inset:0; background:rgba(255,255,255,.85); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+  .big-text { font-size:46px; font-weight:900; color:var(--accent); letter-spacing:2px; }
+  .count { font-size:54px; font-weight:900; }
+  .home { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:24px; }
+  .logo { font-size:40px; font-weight:900; letter-spacing:4px; border:3px solid var(--ink); padding:10px 22px; margin-bottom:24px; }
+  .wide { width:220px; }
+  .result { flex:1; padding:14px; display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+  .row { display:flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; border-radius:8px; padding:6px 8px; font-size:12px; }
+  .row .tag { width:64px; font-weight:700; font-size:11px; }
+  .row .mini { display:flex; gap:3px; }
+  .row .mini .card { width:24px; height:32px; font-size:10px; border-width:1px; }
+  .row .sum { margin-left:auto; font-size:11px; color:var(--sub); }
+  .tag.win { color:var(--accent); }
+  .legend { max-width:760px; margin:0 auto 30px; padding:0 16px; font-size:13px; line-height:1.7; }
+  .legend table { border-collapse:collapse; width:100%; font-size:12.5px; }
+  .legend td, .legend th { border:1px solid var(--line); padding:4px 6px; text-align:left; vertical-align:top; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ドボン MVP ワイヤーフレーム v0.1(一人プレイ・ミニマムルール)</h1>
+  <p>配置だけを決めるための下書きです。色・形・演出は仮。仕様は <code>docs/mvp/spec.md</code>、ルールは <code>docs/rules/minimum.md</code> が正。<br>オレンジ = 強調色(張り・ドボン受付・ドボン)。点線の枠 = 今の手番。席は 自分(下)→左→上→右 の時計回り。</p>
+</header>
+
+<div class="grid">
+
+<!-- 1 ホーム -->
+<section class="screen">
+  <h2>① ホーム</h2>
+  <div class="phone">
+    <div class="home">
+      <div class="logo">DOBON</div>
+      <div class="btn primary wide">CPUと対戦</div>
+      <div class="btn wide">ルール</div>
+      <div style="font-size:11px;color:var(--sub);margin-top:30px">設定(デバッグ):シード / 速さ ×1 ×2 ×4 / CPUの手札を表示</div>
+    </div>
+  </div>
+  <ul class="notes">
+    <li>「CPUと対戦」ですぐ始まる(待機画面なし)</li>
+    <li>「ルール」はミニマムルールの要約を1画面で</li>
+    <li>デバッグ設定は小さく。<code>?debug=1</code> でも開く</li>
+  </ul>
+</section>
+
+<!-- 2 開始時の受付 -->
+<section class="screen">
+  <h2>② ゲーム開始時の受付(初張り)</h2>
+  <div class="phone">
+    <div class="topbar"><span>≡</span><span>山札 39</span><span>DOBON</span></div>
+    <div class="table">
+      <div class="seat s-top"><div class="name">CPU 2<span class="badge">張り</span></div><div class="stack"><span>3</span></div></div>
+      <div class="seat s-left"><div class="name">CPU 1</div><div class="stack"><span>3</span></div></div>
+      <div class="seat s-right"><div class="name">CPU 3</div><div class="stack"><span>3</span></div></div>
+      <div class="center">
+        <div class="pile"><div class="stack" style="margin:0"></div><div class="card big">♦9</div></div>
+        <div class="playedby">最初の場札(ドボンの対象外)</div>
+      </div>
+      <div class="msg">ゲーム開始まで <span style="font-size:22px">3</span></div>
+      <div class="toast">CPU 2 が張った!</div>
+    </div>
+    <div class="me">
+      <div class="me-head"><span>あなた(親)</span><span class="total">合計 <b>11</b></span></div>
+      <div class="hand"><div class="card">♦4</div><div class="card">♥2</div><div class="card">♠5</div></div>
+      <div class="controls">
+        <div><div class="btn off">プレイ</div></div>
+        <div><div class="btn off">ドロー</div></div>
+        <div><div class="btn off">パス</div></div>
+        <div class="main">張る<small>タップ</small></div>
+      </div>
+    </div>
+    <div class="log">▲ ログ:ゲーム開始。親はあなた</div>
+  </div>
+  <ul class="notes">
+    <li>配った直後に <b>4秒</b> のカウントダウン(START_WINDOW_MS)</li>
+    <li>合計13以下なら「張る」が押せる。<b>押した時点で確定</b></li>
+    <li>誰かが張ったらトーストで知らせ、残りが短ければ1.5秒まで延ばす</li>
+    <li>場札の下に「最初の場札」のラベル</li>
+  </ul>
+</section>
+
+<!-- 3 自分の番・カード選択中 -->
+<section class="screen">
+  <h2>③ 自分の番(カードを選択中)</h2>
+  <div class="phone">
+    <div class="topbar"><span>≡</span><span>山札 31</span><span>DOBON</span></div>
+    <div class="table">
+      <div class="seat s-top"><div class="name">CPU 2<span class="badge">張り</span></div><div class="stack"><span>2</span></div></div>
+      <div class="seat s-left"><div class="name">CPU 1</div><div class="stack"><span>5</span></div></div>
+      <div class="seat s-right"><div class="name">CPU 3</div><div class="stack"><span>4</span></div></div>
+      <div class="center">
+        <div class="pile"><div class="stack" style="margin:0"></div><div class="card big">♠8</div></div>
+        <div class="playedby">CPU 3 がプレイ</div>
+      </div>
+      <div class="msg">あなたの番です</div>
+    </div>
+    <div class="me turnmark" style="outline-offset:-4px">
+      <div class="me-head"><span>あなた</span><span class="total">合計 <b>26</b></span></div>
+      <div class="hand">
+        <div class="card no">♦3</div><div class="card sel">♦8</div><div class="card no">♥2</div><div class="card no">♣9</div><div class="card blocked">♠4</div>
+      </div>
+      <div class="controls">
+        <div><div class="btn primary">プレイ</div><div class="reason"></div></div>
+        <div><div class="btn off">ドロー</div><div class="reason">出せるカードがあります</div></div>
+        <div><div class="btn off">パス</div><div class="reason">ドローの後だけ</div></div>
+        <div><div class="main off">張る</div><div class="reason">合計が14以上</div></div>
+      </div>
+    </div>
+    <div class="log">▲ ログ:CPU 3 が ♠8 をプレイ</div>
+  </div>
+  <ul class="notes">
+    <li>タップで選択(持ち上がる)→「プレイ」で出す。もう一度タップで解除</li>
+    <li>灰色 = そもそも出せない。<b>点線</b> = 他を選んだので今は選べない</li>
+    <li>選んでいるだけでは受付は閉じない(CPU 2 はまだドボンできる)</li>
+    <li>押せないボタンには理由を小さく出す</li>
+    <li>手札は自動で並び替え。合計は常に表示</li>
+  </ul>
+</section>
+
+<!-- 4 CPUがプレイ・受付中・自分は張り中 -->
+<section class="screen">
+  <h2>④ CPUがプレイ → ドボン受付中(自分は張り中)</h2>
+  <div class="phone">
+    <div class="topbar"><span>≡</span><span>山札 27</span><span>DOBON</span></div>
+    <div class="table">
+      <div class="seat s-top"><div class="name">CPU 2</div><div class="stack"><span>4</span></div></div>
+      <div class="seat s-left turnmark"><div class="name">CPU 1</div><div class="stack"><span>3</span></div></div>
+      <div class="seat s-right"><div class="name">CPU 3<span class="badge">張り</span></div><div class="stack"><span>2</span></div></div>
+      <div class="center">
+        <div class="pile"><div class="stack" style="margin:0"></div><div class="window"><div class="card big">♣7</div></div></div>
+        <div class="window-label">ドボン受付中</div>
+        <div class="playedby">CPU 1 がプレイ</div>
+      </div>
+      <div class="msg">CPU 1 の番</div>
+    </div>
+    <div class="me">
+      <div class="me-head"><span>あなた<span class="badge">張り</span></span><span class="total">合計 <b>7</b></span></div>
+      <div class="hand"><div class="card no">♥3</div><div class="card no">♠4</div></div>
+      <div class="controls">
+        <div><div class="btn off">プレイ</div></div>
+        <div><div class="btn off">ドロー</div></div>
+        <div><div class="btn off">パス</div><div class="reason">自分の番ではありません</div></div>
+        <div><div class="main dobon">↑ ドボン<small>上にフリック</small></div></div>
+      </div>
+    </div>
+    <div class="log">▲ ログ:CPU 1 が ♣7 をプレイ</div>
+  </div>
+  <ul class="notes">
+    <li>張ると、メインボタンが <b>ドボン</b> に変わる。上に約48px動かした瞬間に宣言</li>
+    <li>受付中は場札の周りにオレンジの枠。次の人が最初の操作をするまで続く(最低2.5秒)</li>
+    <li>合計が合っていなくてもフリックできる(チョンボの可能性)</li>
+    <li>受付外はボタンがグレー。最初の場札・自分のカードには「対象外」</li>
+    <li>張っている人には全員から見える「張り」バッジ</li>
+  </ul>
+</section>
+
+<!-- 5 判定待ち→ドボン! -->
+<section class="screen">
+  <h2>⑤ 宣言 → 判定待ち → ドボン!</h2>
+  <div class="phone">
+    <div class="topbar"><span>≡</span><span>山札 27</span><span>DOBON</span></div>
+    <div class="table">
+      <div class="seat s-top"><div class="name">CPU 2</div><div class="stack"><span>4</span></div></div>
+      <div class="seat s-left"><div class="name">CPU 1</div><div class="stack"><span>3</span></div></div>
+      <div class="seat s-right"><div class="name">CPU 3<span class="badge">張り</span></div><div class="stack"><span>2</span></div></div>
+      <div class="center">
+        <div class="pile"><div class="stack" style="margin:0"></div><div class="window"><div class="card big">♣7</div></div></div>
+      </div>
+    </div>
+    <div class="me">
+      <div class="me-head"><span>あなた<span class="badge">張り</span></span><span class="total">合計 <b>7</b></span></div>
+      <div class="hand"><div class="card">♥3</div><div class="card">♠4</div></div>
+      <div class="controls">
+        <div><div class="btn off">プレイ</div></div><div><div class="btn off">ドロー</div></div><div><div class="btn off">パス</div></div>
+        <div><div class="main off">判定待ち…</div></div>
+      </div>
+    </div>
+    <div class="log">▲ ログ</div>
+    <div class="overlay">
+      <div class="big-text">ドボン!</div>
+      <div style="font-size:18px;font-weight:700">あなた の勝ち</div>
+      <div style="font-size:12px;color:var(--sub)">CPU 1 の ♣7 に、合計 7 でドボン</div>
+    </div>
+  </div>
+  <ul class="notes">
+    <li>宣言した本人にだけ「判定待ち…」。他の人には誰が押したか見せない</li>
+    <li>宣言から <b>1秒</b> の猶予(GRACE_MS)。その間の宣言も一緒に判定</li>
+    <li>判定後、中央に大きく「ドボン!」「チョンボ!」と名前(1.8秒)→ 結果画面へ</li>
+  </ul>
+</section>
+
+<!-- 6 結果 -->
+<section class="screen">
+  <h2>⑥ 結果</h2>
+  <div class="phone">
+    <div class="topbar"><span></span><span>結果</span><span></span></div>
+    <div class="result">
+      <div style="text-align:center"><div class="big-text" style="font-size:34px">ドボン!</div>
+      <div style="font-size:12px;color:var(--sub)">CPU 1 の ♣7 に、あなたが合計 7 でドボン</div></div>
+      <div style="display:flex;justify-content:center"><div class="card big">♣7</div></div>
+      <div class="row"><span class="tag win">勝者</span>あなた<div class="mini"><div class="card">♥3</div><div class="card">♠4</div></div><span class="sum">合計 7</span></div>
+      <div class="row"><span class="tag">敗者</span>CPU 1<div class="mini"><div class="card">♦J</div><div class="card">♠2</div></div><span class="sum">合計 13</span></div>
+      <div class="row"><span class="tag" style="color:var(--sub)">—</span>CPU 2<div class="mini"><div class="card">♥K</div><div class="card">♣9</div><div class="card">♦5</div><div class="card">♠A</div></div><span class="sum">合計 28</span></div>
+      <div class="row"><span class="tag" style="color:var(--sub)">—</span>CPU 3<div class="mini"><div class="card">♦A</div><div class="card">♥5</div></div><span class="sum">合計 6</span></div>
+      <div style="font-size:10px;color:var(--sub);text-align:center">シード 482913(デバッグ時のみ表示)</div>
+      <div class="btn primary">もう一度</div>
+      <div class="btn">ホームへ</div>
+    </div>
+  </div>
+  <ul class="notes">
+    <li>終わり方は「ドボン!」「チョンボ!」「引き分け」の3つ</li>
+    <li>勝者・敗者・どちらでもない(—)。順位はつけない</li>
+    <li>全員の手札を公開して、合計も出す(答え合わせ)</li>
+    <li>引き分けのときは理由(山札がなくなった)を出す</li>
+  </ul>
+</section>
+
+</div>
+
+<div class="legend">
+  <h2 style="font-size:15px">メインボタンの状態(張る / ドボン)</h2>
+  <table>
+    <tr><th>状態</th><th>表示</th><th>操作</th></tr>
+    <tr><td>張っていない・合計13以下・張れる時間</td><td>「張る」</td><td>タップで張る(②③は予約、④と開始時はすぐ確定)</td></tr>
+    <tr><td>張っていない・合計14以上、または張れない時間</td><td>「張る」グレー+理由</td><td>押せない</td></tr>
+    <tr><td>仮押し中(②③)</td><td>「張る(予約中)」</td><td>取り消しできない。操作完了で確定か失敗</td></tr>
+    <tr><td>張り中・ドボン受付中・他の人のカード</td><td>「↑ ドボン」オレンジ</td><td>上フリックで宣言</td></tr>
+    <tr><td>張り中・受付の時間外</td><td>「ドボン」グレー</td><td>フリックしても無効</td></tr>
+    <tr><td>張り中・最初の場札 / 自分のカード</td><td>「ドボン(対象外)」グレー</td><td>受け付けない</td></tr>
+    <tr><td>宣言済み</td><td>「判定待ち…」</td><td>押せない</td></tr>
+  </table>
+</div>
+</body>
+</html>
