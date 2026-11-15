@@ -328,7 +328,7 @@ export class GameRunner {
     const player = this.state.currentPlayer;
     const action = toAction(decide(getPlayerView(this.state, player), this.rng), player);
     if (!action || this.apply(action) === null) {
-      throw new Error(`CPU ${player} の操作が受け付けられなかった: ${JSON.stringify(action)}`);
+      throw new Error(`CPU ${player} action rejected: ${JSON.stringify(action)}`);
     }
     this.afterAction(action);
   }

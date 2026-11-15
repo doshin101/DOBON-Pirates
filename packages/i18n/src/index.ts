@@ -1,10 +1,12 @@
-import ja from './ja.json';
-import en from './en.json';
-
-export { ja, en };
+import jaMessages from './ja.json';
+import enMessages from './en.json';
 
 /** 言語ファイルの形(日本語ファイルが基準)。 */
-export type Messages = typeof ja;
+export type Messages = typeof jaMessages;
+
+export const ja: Messages = jaMessages;
+/** 英語。日本語と同じ形でないと、型チェックで落ちる(言語の切り替え画面は、まだない) */
+export const en: Messages = enMessages;
 
 /** 画面に出す文字は、ここを通して取り出す。 */
 export function getMessages(): Messages {

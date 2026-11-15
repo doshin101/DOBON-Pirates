@@ -7,6 +7,8 @@ import { playerName, resultTexts } from '../ui/text';
 interface Props {
   state: GameState;
   result: GameResult;
+  /** デバッグ表示のときだけ、シードを出す(同じ展開を再現するため) */
+  seed: number | null;
   onAgain: () => void;
   onHome: () => void;
 }
@@ -25,7 +27,7 @@ function roleOf(result: GameResult, player: PlayerId): Role {
 }
 
 /** 結果画面。勝者・敗者・どちらでもない(順位はつけない)、最後の場札、全員の手札と合計(答え合わせ) */
-export function ResultScreen({ state, result, onAgain, onHome }: Props) {
+export function ResultScreen({ state, result, seed, onAgain, onHome }: Props) {
   const m = getMessages();
   const { title, detail } = resultTexts(m, state, result);
   return (
@@ -60,6 +62,7 @@ export function ResultScreen({ state, result, onAgain, onHome }: Props) {
             </div>
           );
         })}
+        {seed !== null && <div className="result__seed">{format(m.result.seed, { seed })}</div>}
         <button type="button" className="btn btn--primary" onClick={onAgain}>
           {m.result.again}
         </button>

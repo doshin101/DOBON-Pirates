@@ -334,3 +334,33 @@ button { font: inherit; color: inherit; }
 .row__hand { flex: 1; display: flex; flex-wrap: wrap; gap: 3px; min-width: 0; }
 .row__sum { flex: none; color: var(--sub); font-size: 11px; }
 .card--mini { width: 24px; height: 32px; border-width: 1px; font-size: 10px; }
+
+/* ---- ホームの設定(デバッグ) ---- */
+.debug-settings { width: 260px; margin-top: 16px; color: var(--sub); font-size: 11px; }
+.debug-settings summary { cursor: pointer; }
+.debug-settings__row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.debug-settings__row--check { justify-content: flex-start; }
+.debug-settings input[type='text'] { width: 90px; min-height: 32px; padding: 0 6px; border: 1px solid var(--line); border-radius: 4px; font-size: 13px; }
+.speed { display: inline-flex; gap: 4px; }
+.speed__btn { min-width: 36px; min-height: 32px; padding: 0 6px; border: 1px solid var(--line); border-radius: 4px; background: #fff; font-size: 12px; }
+.speed__btn--on { border-color: var(--ink); background: var(--ink); color: #fff; }
+
+/* ---- 対戦中のデバッグ表示 ---- */
+.debug { padding: 4px 10px; border-top: 1px dashed var(--accent); background: #fff8f3; font-size: 10px; color: var(--sub); }
+.debug__head { display: flex; align-items: center; justify-content: space-between; }
+.debug__table { width: 100%; border-collapse: collapse; }
+.debug__table th { width: 84px; padding: 1px 0; font-weight: 600; text-align: left; }
+.debug__cards { display: flex; flex-wrap: wrap; gap: 2px; }
+.debug__sum { width: 24px; text-align: right; }
+.debug .speed__btn { min-width: 28px; min-height: 24px; font-size: 10px; }
+
+/* ---- ルール画面 ---- */
+.rules { min-height: 100dvh; background: #fff; }
+.topbar--rules span { padding-left: 0; }
+.rules__back { width: auto; padding: 0 12px; font-size: 13px; }
+.rules__body { padding: 8px 16px 32px; }
+.rules__section h2 { margin: 16px 0 4px; font-size: 15px; }
+.rules__section ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; }
+.rules__section li { margin-bottom: 4px; }
+
+.result__seed { color: var(--sub); font-size: 10px; text-align: center; }
