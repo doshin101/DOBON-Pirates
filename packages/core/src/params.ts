@@ -27,6 +27,8 @@ export interface Params {
   readonly STILL_ARMED_TOAST_MS: number;
   /** 「ドボン!」の表示 */
   readonly RESULT_FLASH_MS: number;
+  /** 「○○が張った!」など、継続以外のトーストの長さ */
+  readonly TOAST_MS: number;
 }
 
 export const DEFAULT_PARAMS: Params = {
@@ -41,4 +43,5 @@ export const DEFAULT_PARAMS: Params = {
   GRACE_MS: 1000,
   STILL_ARMED_TOAST_MS: 1000,
   RESULT_FLASH_MS: 1800,
+  TOAST_MS: 1500,
 };

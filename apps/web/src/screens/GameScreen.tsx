@@ -4,15 +4,22 @@ import { format, getMessages } from '@dobon/i18n';
 import { CardFace, CardStack } from '../components/CardFace';
 import { Hand } from '../components/Hand';
 import { LogPanel } from '../components/LogPanel';
+import { MainButton } from '../components/MainButton';
+import { ResultFlash } from '../components/ResultFlash';
 import { Seat } from '../components/Seat';
+import { Toasts } from '../components/Toasts';
 import { getHumanControls, type ButtonState } from '../game/controls';
 import { HUMAN } from '../game/GameRunner';
 import { sortHand } from '../game/sortHand';
 import { useGame } from '../game/useGame';
 import { playerName, reasonText, type ButtonKind } from '../ui/text';
+import { ResultScreen } from './ResultScreen';
 
 interface Props {
+  /** ホームへ戻る */
   onExit: () => void;
+  /** もう一度(新しい配りで始める) */
+  onAgain: () => void;
 }
 
 /** 配置:CPUは 左(1)・上(2)・右(3)。自分は下 */
@@ -22,7 +29,7 @@ const SEATS: { player: PlayerId; className: string }[] = [
   { player: 3, className: 'seat--right' },
 ];
 
-export function GameScreen({ onExit }: Props) {
+export function GameScreen({ onExit, onAgain }: Props) {
   const m = getMessages();
   // 対戦ごとの配りの元(シード)。M4 で ?seed= から指定できるようにする
   const [seed] = useState(() => Math.floor(Math.random() * 0x7fffffff));
@@ -35,6 +42,10 @@ export function GameScreen({ onExit }: Props) {
   const holding = selected && hand.some((c) => sameCard(c, selected)) && controls.canAct ? selected : null;
   const myTurn = state.currentPlayer === HUMAN;
   const finished = state.phase === 'finished';
+
+  if (stage === 'ended' && state.result) {
+    return <ResultScreen state={state} result={state.result} onAgain={onAgain} onHome={onExit} />;
+  }
 
   const toggle = (card: Card) => setSelected(holding && sameCard(holding, card) ? null : card);
   const play = () => {
@@ -52,11 +63,14 @@ export function GameScreen({ onExit }: Props) {
     if (finished || window.confirm(m.game.confirmQuit)) onExit();
   };
 
-  const turnMessage = finished
-    ? ''
-    : myTurn
-      ? m.game.yourTurn
-      : format(m.game.turnOf, { name: playerName(m, state.currentPlayer) });
+  const message =
+    stage === 'startWindow' && snapshot.countdown !== null
+      ? format(m.game.countdown, { count: snapshot.countdown })
+      : finished
+        ? ''
+        : myTurn
+          ? m.game.yourTurn
+          : format(m.game.turnOf, { name: playerName(m, state.currentPlayer) });
   const playedBy = state.topCardPlayedBy;
 
   return (
@@ -78,24 +92,28 @@ export function GameScreen({ onExit }: Props) {
             count={state.hands[player].length}
             armed={state.armed[player]}
             isDealer={state.startingPlayer === player}
-            isTurn={!finished && state.currentPlayer === player}
+            isTurn={!finished && stage !== 'startWindow' && state.currentPlayer === player}
           />
         ))}
         <div className="center">
           <div className="pile">
             <CardStack />
-            <CardFace card={state.topCard} big />
+            <div className={state.dobonWindowOpen ? 'window' : undefined}>
+              <CardFace card={state.topCard} big />
+            </div>
           </div>
+          {state.dobonWindowOpen && <div className="window-label">{m.game.dobonWindow}</div>}
           <div className="center__note">
             {playedBy === null
               ? m.game.startingTopCard
               : format(m.game.playedBy, { name: playerName(m, playedBy) })}
           </div>
         </div>
-        <div className="msg">{turnMessage}</div>
+        <div className="msg">{message}</div>
+        <Toasts toasts={snapshot.toasts} />
       </section>
 
-      <section className={`me${myTurn && !finished ? ' turnmark' : ''}`}>
+      <section className={`me${myTurn && !finished && stage !== 'startWindow' ? ' turnmark' : ''}`}>
         <div className="me__head">
           <span>
             {playerName(m, HUMAN)}
@@ -111,21 +129,13 @@ export function GameScreen({ onExit }: Props) {
           <Control kind="play" state={controls.play} primary={controls.play.enabled} onPress={play} />
           <Control kind="draw" state={controls.draw} onPress={draw} />
           <Control kind="pass" state={controls.pass} onPress={pass} />
-          {/* M2:張るボタンは表示だけ。押しても何も起きない(M3 で動かす) */}
-          <Control kind="arm" state={controls.arm} main onPress={() => {}} />
+          <MainButton state={controls.main} onArm={() => runner.humanArm()} onDobon={() => runner.humanDobon()} />
         </div>
       </section>
 
-      <LogPanel log={snapshot.log} />
+      <LogPanel log={snapshot.log} state={state} />
 
-      {stage === 'ended' && state.result && (
-        <div className="overlay" role="dialog" aria-live="polite">
-          <div className="overlay__title">{m.result.noContest}</div>
-          <button type="button" className="btn btn--primary" onClick={onExit}>
-            {m.result.toHome}
-          </button>
-        </div>
-      )}
+      {stage === 'flash' && state.result && <ResultFlash state={state} result={state.result} />}
     </div>
   );
 }
@@ -135,23 +145,19 @@ interface ControlProps {
   state: ButtonState;
   onPress: () => void;
   primary?: boolean;
-  main?: boolean;
 }
 
 /** ボタン1つと、押せない理由(小さく)。押せないボタンは非活性にする */
-function Control({ kind, state, onPress, primary, main }: ControlProps) {
+function Control({ kind, state, onPress, primary }: ControlProps) {
   const m = getMessages();
   const reason = state.enabled ? '' : reasonText(m, state.reason, kind);
-  const cls = main
-    ? `main${state.enabled ? '' : ' main--off'}`
-    : `btn${primary ? ' btn--primary' : ''}${state.enabled ? '' : ' btn--off'}`;
+  const cls = `btn${primary ? ' btn--primary' : ''}${state.enabled ? '' : ' btn--off'}`;
   return (
     <div className="control">
       <button type="button" className={cls} disabled={!state.enabled} onClick={onPress}>
-        {m.buttons[kind]}
+        {m.buttons[kind as 'play' | 'draw' | 'pass']}
       </button>
       <div className="reason">{reason}</div>
     </div>
   );
 }
-

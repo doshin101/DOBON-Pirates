@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import { getMessages } from '@dobon/i18n';
+import type { GameState } from '@dobon/core';
 import type { LogEntry } from '../game/GameRunner';
-import { logText } from '../ui/text';
+import { endLogText, logText } from '../ui/text';
 
 /** 画面下の、折りたたみのログ(誰が何をしたか。開発の確認用) */
-export function LogPanel({ log }: { log: readonly LogEntry[] }) {
+export function LogPanel({ log, state }: { log: readonly LogEntry[]; state: GameState }) {
   const m = getMessages();
   const [open, setOpen] = useState(false);
   const lines = log.flatMap((entry) => {
     const text = logText(m, entry.event);
     return text === null ? [] : [{ id: entry.id, text }];
   });
+  // ゲームが終わったら、結果を最後の行に足す(宣言した人は、ここで初めて分かる)
+  const ending = endLogText(m, state);
+  if (ending) lines.push({ id: -1, text: ending });
   const last = lines.at(-1)?.text ?? m.log.empty;
 
   return (

@@ -24,7 +24,7 @@ function snapshot(overrides: Partial<GameState>, stage: Stage = 'action'): Snaps
     result: null,
     ...overrides,
   };
-  return { state, stage, log: [], seed: 1, speed: 1 };
+  return { state, stage, log: [], toasts: [], countdown: null, seed: 1, speed: 1 };
 }
 
 describe('カードの状態(spec 4-4)', () => {
@@ -103,11 +103,108 @@ describe('ボタンと、押せない理由(spec 4-3)', () => {
     expect(controls.play).toEqual({ enabled: false, reason: 'notYourTurn' });
     expect(controls.draw.reason).toBe('notYourTurn');
     expect(controls.pass.reason).toBe('notYourTurn');
-    expect(controls.arm.reason).toBe('notYourTurn');
+    expect(controls.main).toEqual({ kind: 'arm', enabled: false, reason: 'notYourTurn' });
   });
 
-  it('張るボタンは、合計14以上だと理由が出る(押しても何も起きないが、表示は core のとおり)', () => {
+  it('張るボタンは、合計14以上だと理由が出る', () => {
     const big = snapshot({ hands: [[c('S', 13), c('S', 2)], [c('C', 4)], [c('C', 4)], [c('C', 4)]] });
-    expect(getHumanControls(big, big.state.hands[0], null).arm.reason).toBe('totalTooHigh');
+    expect(getHumanControls(big, big.state.hands[0], null).main).toEqual({
+      kind: 'arm',
+      enabled: false,
+      reason: 'totalTooHigh',
+    });
+  });
+});
+
+describe('メインボタン(張る / ドボン)の状態(wireframe.html の下の表)', () => {
+  const main = (overrides: Partial<GameState>, stage: Stage = 'action') => {
+    const snap = snapshot(overrides, stage);
+    return getHumanControls(snap, snap.state.hands[0], null).main;
+  };
+  const small = [[c('H', 5), c('D', 3)], [c('C', 4)], [c('C', 4)], [c('C', 4)]] as const;
+
+  it('張っていない・合計13以下・張れる時間 → 「張る」(押せる)', () => {
+    expect(main({ hands: small })).toEqual({ kind: 'arm', enabled: true, reason: null });
+    expect(main({ hands: small, phase: 'startWindow', topCardPlayedBy: null }, 'startWindow')).toEqual({
+      kind: 'arm',
+      enabled: true,
+      reason: null,
+    });
+    expect(main({ hands: small, phase: 'accept' }, 'accept')).toEqual({ kind: 'arm', enabled: true, reason: null });
+  });
+
+  it('張れない時間 → 「張る」グレー+理由(自分のターンのみ)。①の間は理由なし', () => {
+    expect(main({ hands: small, currentPlayer: 2 })).toEqual({ kind: 'arm', enabled: false, reason: 'notYourTurn' });
+    expect(main({ hands: small }, 'turnStart')).toEqual({ kind: 'arm', enabled: false, reason: null });
+  });
+
+  it('仮押し中(②③) → 「張る(予約中)」', () => {
+    expect(main({ hands: small, provisionalArm: [true, false, false, false] })).toEqual({ kind: 'armReserved' });
+  });
+
+  it('張り中・ドボン受付中・他の人のカード → 「ドボン」(上フリックで宣言できる)', () => {
+    expect(
+      main({ hands: small, armed: [true, false, false, false], dobonWindowOpen: true, topCardPlayedBy: 2 }),
+    ).toEqual({ kind: 'dobon', mode: 'ready' });
+  });
+
+  it('張り中・受付の時間外 → 「ドボン」グレー', () => {
+    expect(
+      main({ hands: small, armed: [true, false, false, false], dobonWindowOpen: false, topCardPlayedBy: 2 }),
+    ).toEqual({ kind: 'dobon', mode: 'closed' });
+  });
+
+  it('張り中・最初の場札 / 自分のカード → 「ドボン(対象外)」', () => {
+    const armed = [true, false, false, false] as const;
+    expect(main({ hands: small, armed, topCardPlayedBy: null })).toEqual({ kind: 'dobon', mode: 'notTarget' });
+    expect(main({ hands: small, armed, dobonWindowOpen: true, topCardPlayedBy: 0 })).toEqual({
+      kind: 'dobon',
+      mode: 'notTarget',
+    });
+  });
+
+  it('宣言ずみ → 「判定待ち…」', () => {
+    expect(
+      main(
+        { hands: small, armed: [true, false, false, false], dobonWindowOpen: true, topCardPlayedBy: 2, declarations: [0] },
+        'grace',
+      ),
+    ).toEqual({ kind: 'dobon', mode: 'judging' });
+  });
+
+  it('猶予の間(他の人が宣言したあと)も、まだ宣言していなければ、フリックできる(同じ判定に含まれる)', () => {
+    expect(
+      main(
+        { hands: small, armed: [true, false, false, false], dobonWindowOpen: true, topCardPlayedBy: 2, declarations: [1] },
+        'grace',
+      ),
+    ).toEqual({ kind: 'dobon', mode: 'ready' });
+  });
+
+  it('猶予の間は、プレイ・ドロー・パスの理由が「判定中」になる(自分の番のとき)', () => {
+    const snap = snapshot(
+      { phase: 'awaitAction', dobonWindowOpen: true, topCardPlayedBy: 3, declarations: [2], armed: [false, false, true, false] },
+      'grace',
+    );
+    const controls = getHumanControls(snap, snap.state.hands[0], null);
+    expect(controls.play).toEqual({ enabled: false, reason: 'resolutionPending' });
+    expect(controls.draw).toEqual({ enabled: false, reason: 'resolutionPending' });
+    expect(controls.pass).toEqual({ enabled: false, reason: 'resolutionPending' });
+  });
+
+  it('ゲームが終わったあとは、ドボンできない(グレー)', () => {
+    expect(
+      main(
+        {
+          hands: small,
+          armed: [true, false, false, false],
+          dobonWindowOpen: false,
+          topCardPlayedBy: 2,
+          phase: 'finished',
+          result: { type: 'noContest' },
+        },
+        'ended',
+      ),
+    ).toEqual({ kind: 'dobon', mode: 'closed' });
   });
 });
