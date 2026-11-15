@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="102" fill="#222222"/>
+  <rect x="86" y="188" width="340" height="110" fill="none" stroke="#ffffff" stroke-width="16"/>
+  <text x="256" y="266" text-anchor="middle" font-family="-apple-system, 'Inter', 'DejaVu Sans', sans-serif" font-weight="900" font-size="68" letter-spacing="8" fill="#ffffff">DOBON</text>
+  <rect x="181" y="334" width="150" height="20" rx="10" fill="#e8590c"/>
+</svg>

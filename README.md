@@ -8,6 +8,7 @@
 - MVPの仕様:[`docs/mvp/spec.md`](docs/mvp/spec.md)、画面:[`docs/mvp/wireframe.html`](docs/mvp/wireframe.html)
 - 進め方:[`docs/mvp/tasks.md`](docs/mvp/tasks.md)
 - スマホでの開発手順:[`docs/setup/smartphone-workflow.md`](docs/setup/smartphone-workflow.md)
+- ホーム画面に追加(アプリのように開く・オフラインで遊ぶ):[`docs/setup/install-on-phone.md`](docs/setup/install-on-phone.md)
 
 ## フォルダ構成
 
