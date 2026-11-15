@@ -16,6 +16,10 @@ export function App() {
       }}
     />
   ) : (
-    <GameScreen key={round} onExit={() => setScreen('home')} />
+    <GameScreen
+      key={round}
+      onExit={() => setScreen('home')}
+      onAgain={() => setRound((n) => n + 1)}
+    />
   );
 }

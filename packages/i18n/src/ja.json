@@ -22,13 +22,23 @@
     "total": "合計",
     "dealer": "親",
     "armedBadge": "張り",
-    "cardCount": "{count}枚"
+    "cardCount": "{count}枚",
+    "countdown": "ゲーム開始まで {count}",
+    "dobonWindow": "ドボン受付中",
+    "resultTitle": "結果"
   },
   "buttons": {
     "play": "プレイ",
     "draw": "ドロー",
     "pass": "パス",
-    "arm": "張る"
+    "arm": "張る",
+    "armHint": "タップ",
+    "armReserved": "張る(予約中)",
+    "dobon": "↑ ドボン",
+    "dobonHint": "上にフリック",
+    "dobonClosed": "ドボン",
+    "dobonNotTarget": "ドボン(対象外)",
+    "judging": "判定待ち…"
   },
   "reasons": {
     "notYourTurn": "自分の番ではありません",
@@ -50,14 +60,37 @@
     "played": "{name} が {card} をプレイ",
     "drew": "{name} がドロー",
     "drewOwn": "{name} が {card} をドロー",
-    "passed": "{name} がパス"
+    "passed": "{name} がパス",
+    "armed": "{name} が張った",
+    "armFailed": "{name} は張れなかった(合計{total})",
+    "disarmed": "{name} の張りが外れた",
+    "dobonDeclaredYou": "{name} がドボンを宣言",
+    "endedDobon": "ドボン! {winner} の勝ち({loser} の {card} に、合計 {total})",
+    "endedFoul": "チョンボ! {names} の負け",
+    "endedNoContest": "引き分け(山札がなくなった)"
   },
   "result": {
+    "dobon": "ドボン!",
+    "foul": "チョンボ!",
     "noContest": "引き分け",
-    "toHome": "ホームへ"
+    "dobonDetail": "{loser} の {card} に、{winner} が合計 {total} でドボン",
+    "foulDetail": "{names} は、合計が合っていないのにドボンした",
+    "noContestDetail": "山札がなくなりました",
+    "winner": "勝者",
+    "loser": "敗者",
+    "none": "—",
+    "total": "合計 {total}",
+    "again": "もう一度",
+    "toHome": "ホームへ",
+    "nameSeparator": "、"
   },
   "cards": {
-    "suits": { "S": "♠", "H": "♥", "D": "♦", "C": "♣" },
+    "suits": {
+      "S": "♠",
+      "H": "♥",
+      "D": "♦",
+      "C": "♣"
+    },
     "ranks": {
       "1": "A",
       "2": "2",
@@ -73,5 +106,18 @@
       "12": "Q",
       "13": "K"
     }
+  },
+  "toast": {
+    "armed": "{name} が張った!",
+    "armedYou": "張りました",
+    "armFailed": "張れませんでした(合計{total})",
+    "disarmed": "{name} の張りが外れた",
+    "stillArmed": "{name} 継続"
+  },
+  "flash": {
+    "dobon": "ドボン!",
+    "foul": "チョンボ!",
+    "winner": "{name} の勝ち",
+    "losers": "{names} の負け"
   }
 }
