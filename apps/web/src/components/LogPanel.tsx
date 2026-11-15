@@ -5,9 +5,18 @@ import type { LogEntry } from '../game/GameRunner';
 import { endLogText, logText } from '../ui/text';
 
 /** 画面下の、折りたたみのログ(誰が何をしたか。開発の確認用) */
-export function LogPanel({ log, state }: { log: readonly LogEntry[]; state: GameState }) {
+export function LogPanel({
+  log,
+  state,
+  defaultOpen = false,
+}: {
+  log: readonly LogEntry[];
+  state: GameState;
+  /** デバッグ表示のときは、最初から開いておく */
+  defaultOpen?: boolean;
+}) {
   const m = getMessages();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const lines = log.flatMap((entry) => {
     const text = logText(m, entry.event);
     return text === null ? [] : [{ id: entry.id, text }];
@@ -20,7 +29,7 @@ export function LogPanel({ log, state }: { log: readonly LogEntry[]; state: Game
   return (
     <div className="log">
       <button type="button" className="log__toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
-        <span>{open ? '▼' : '▲'}</span> {m.log.title}
+        <span>{open ? m.symbols.logOpen : m.symbols.logClosed}</span> {m.log.title}
         {!open && `:${last}`}
       </button>
       {open && (

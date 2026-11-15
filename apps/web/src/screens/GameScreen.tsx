@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import type { Settings, Speed } from '../debug';
 import { sameCard, handTotal, type Card, type PlayerId } from '@dobon/core';
 import { format, getMessages } from '@dobon/i18n';
 import { CardFace, CardStack } from '../components/CardFace';
+import { DebugPanel } from '../components/DebugPanel';
 import { Hand } from '../components/Hand';
 import { LogPanel } from '../components/LogPanel';
 import { MainButton } from '../components/MainButton';
@@ -16,6 +18,9 @@ import { playerName, reasonText, type ButtonKind } from '../ui/text';
 import { ResultScreen } from './ResultScreen';
 
 interface Props {
+  /** この対戦の配りの元(シード) */
+  seed: number;
+  settings: Settings;
   /** ホームへ戻る */
   onExit: () => void;
   /** もう一度(新しい配りで始める) */
@@ -29,11 +34,9 @@ const SEATS: { player: PlayerId; className: string }[] = [
   { player: 3, className: 'seat--right' },
 ];
 
-export function GameScreen({ onExit, onAgain }: Props) {
+export function GameScreen({ seed, settings, onExit, onAgain }: Props) {
   const m = getMessages();
-  // 対戦ごとの配りの元(シード)。M4 で ?seed= から指定できるようにする
-  const [seed] = useState(() => Math.floor(Math.random() * 0x7fffffff));
-  const { runner, snapshot } = useGame(seed);
+  const { runner, snapshot } = useGame(seed, settings.speed);
   const [selected, setSelected] = useState<Card | null>(null);
 
   const { state, stage } = snapshot;
@@ -44,7 +47,15 @@ export function GameScreen({ onExit, onAgain }: Props) {
   const finished = state.phase === 'finished';
 
   if (stage === 'ended' && state.result) {
-    return <ResultScreen state={state} result={state.result} onAgain={onAgain} onHome={onExit} />;
+    return (
+      <ResultScreen
+        state={state}
+        result={state.result}
+        seed={settings.debug ? seed : null}
+        onAgain={onAgain}
+        onHome={onExit}
+      />
+    );
   }
 
   const toggle = (card: Card) => setSelected(holding && sameCard(holding, card) ? null : card);
@@ -77,7 +88,7 @@ export function GameScreen({ onExit, onAgain }: Props) {
     <div className="game">
       <header className="topbar">
         <button type="button" className="topbar__menu" aria-label={m.game.menu} onClick={quit}>
-          ≡
+          {m.symbols.menu}
         </button>
         <span>{format(m.game.deckCount, { count: state.stock.length })}</span>
         <span>{m.app.title}</span>
@@ -133,7 +144,11 @@ export function GameScreen({ onExit, onAgain }: Props) {
         </div>
       </section>
 
-      <LogPanel log={snapshot.log} state={state} />
+      {settings.debug && (
+        <DebugPanel state={state} seed={seed} speed={snapshot.speed as Speed} onSpeed={(speed) => runner.setSpeed(speed)} />
+      )}
+
+      <LogPanel log={snapshot.log} state={state} defaultOpen={settings.debug} />
 
       {stage === 'flash' && state.result && <ResultFlash state={state} result={state.result} />}
     </div>

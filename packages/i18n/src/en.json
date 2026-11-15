@@ -1,1 +1,193 @@
-{}
+{
+  "app": {
+    "title": "DOBON"
+  },
+  "home": {
+    "playVsCpu": "Play vs CPU",
+    "rules": "Rules",
+    "debug": {
+      "title": "Settings (debug)",
+      "seed": "Seed (blank = random)",
+      "seedPlaceholder": "e.g. 123",
+      "speed": "Game speed",
+      "debugMode": "Debug view (CPU hands, open log, seed on result)",
+      "speedValue": "×{speed}"
+    }
+  },
+  "players": {
+    "you": "You",
+    "cpu1": "CPU 1 (left)",
+    "cpu2": "CPU 2 (top)",
+    "cpu3": "CPU 3 (right)"
+  },
+  "game": {
+    "deckCount": "Deck {count}",
+    "menu": "Back to home",
+    "confirmQuit": "Quit this game and go back to home?",
+    "yourTurn": "Your turn",
+    "turnOf": "{name}'s turn",
+    "startingTopCard": "Starting card (cannot be Dobon'd)",
+    "playedBy": "Played by {name}",
+    "total": "Total",
+    "dealer": "Dealer",
+    "armedBadge": "Armed",
+    "cardCount": "{count} cards",
+    "countdown": "Game starts in {count}",
+    "dobonWindow": "Dobon window open",
+    "debugCpuHands": "CPU hands (debug)",
+    "debugSeed": "Seed {seed}",
+    "debugSpeed": "Speed",
+    "resultTitle": "Result"
+  },
+  "buttons": {
+    "play": "Play",
+    "draw": "Draw",
+    "pass": "Pass",
+    "arm": "Arm",
+    "armHint": "Tap",
+    "armReserved": "Arm (reserved)",
+    "dobon": "↑ Dobon",
+    "dobonHint": "Flick up",
+    "dobonClosed": "Dobon",
+    "dobonNotTarget": "Dobon (not allowed)",
+    "judging": "Judging…"
+  },
+  "reasons": {
+    "notYourTurn": "Not your turn",
+    "mustDrawFirst": "With 1 card, draw first",
+    "noPlayableCard": "No playable card",
+    "hasPlayableCard": "You have a playable card",
+    "alreadyDrew": "Draw only once",
+    "drawFirst": "Only after drawing",
+    "totalTooHigh": "Total is 14 or more",
+    "armOnlyOwnTurn": "Your turn only",
+    "alreadyArmed": "Already armed",
+    "resolutionPending": "Judging"
+  },
+  "toast": {
+    "armed": "{name} armed!",
+    "armedYou": "Armed",
+    "armFailed": "Could not arm (total {total})",
+    "disarmed": "{name} is no longer armed",
+    "stillArmed": "{name} still armed"
+  },
+  "log": {
+    "title": "Log",
+    "empty": "Nothing yet",
+    "gameStarted": "Game start. Dealer: {name}",
+    "topCard": "Starting card: {card}",
+    "played": "{name} played {card}",
+    "drew": "{name} drew",
+    "drewOwn": "{name} drew {card}",
+    "passed": "{name} passed",
+    "armed": "{name} armed",
+    "armFailed": "{name} could not arm (total {total})",
+    "disarmed": "{name} is no longer armed",
+    "dobonDeclaredYou": "{name} declared Dobon",
+    "endedDobon": "Dobon! {winner} wins ({loser}'s {card}, total {total})",
+    "endedFoul": "Foul! {names} lose",
+    "endedNoContest": "No contest (the deck ran out)"
+  },
+  "flash": {
+    "dobon": "Dobon!",
+    "foul": "Foul!",
+    "winner": "{name} wins",
+    "losers": "{names} lose"
+  },
+  "result": {
+    "dobon": "Dobon!",
+    "foul": "Foul!",
+    "noContest": "No contest",
+    "dobonDetail": "{winner} declared Dobon with total {total} on {loser}'s {card}",
+    "foulDetail": "{names} declared Dobon without a matching total",
+    "noContestDetail": "The deck ran out",
+    "winner": "Winner",
+    "loser": "Loser",
+    "none": "—",
+    "total": "Total {total}",
+    "again": "Play again",
+    "toHome": "Home",
+    "nameSeparator": ", ",
+    "seed": "Seed {seed} (debug only)"
+  },
+  "cards": {
+    "suits": {
+      "S": "♠",
+      "H": "♥",
+      "D": "♦",
+      "C": "♣"
+    },
+    "ranks": {
+      "1": "A",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "11": "J",
+      "12": "Q",
+      "13": "K"
+    }
+  },
+  "symbols": {
+    "menu": "≡",
+    "logClosed": "▲",
+    "logOpen": "▼"
+  },
+  "rules": {
+    "title": "Rules (Minimum rule)",
+    "back": "Back",
+    "sections": [
+      {
+        "heading": "Basics",
+        "items": [
+          "4 players (you and 3 CPUs) with a 52-card deck (no jokers). One game decides the winner.",
+          "Each player starts with 3 cards. The top card of the deck is turned over as the starting card. The dealer is random. Play goes clockwise.",
+          "Card values: A = 1, 2–10 as printed, J = 11, Q = 12, K = 13."
+        ]
+      },
+      {
+        "heading": "Your turn",
+        "items": [
+          "Play one card from your hand that has the same rank or the same suit as the top card. If you can play, you must.",
+          "If you cannot play, draw one card. After drawing, play if you can; otherwise pass.",
+          "With only 1 card in hand, draw first. You cannot go out by emptying your hand; the only way to win is Dobon."
+        ]
+      },
+      {
+        "heading": "Arming",
+        "items": [
+          "When your hand total is 13 or less, press Arm to become armed. You cannot declare Dobon unless you are armed. Everyone can see who is armed.",
+          "You can press it for a few seconds at the start of the game and during your own turn. If you press it mid-turn, it is reserved: it is confirmed if your total is 13 or less when your play or pass is done, and fails if it is 14 or more.",
+          "If an armed player's total becomes 14 or more, the arm is removed automatically. You cannot remove it yourself."
+        ]
+      },
+      {
+        "heading": "Dobon",
+        "items": [
+          "While armed, when your hand total equals the rank of the top card, flick the Dobon button upward to declare. A simple tap does not declare.",
+          "Only cards played by other players count. The starting card and cards you played yourself do not. Matching the total by drawing does not count either.",
+          "You can declare from right after a card is played until the next player makes their first action.",
+          "A valid Dobon ends the game: the declarer wins and the player who played that card loses. If several players declare, the one closest clockwise after the player who played wins."
+        ]
+      },
+      {
+        "heading": "Foul",
+        "items": [
+          "Declaring Dobon when your total does not match is a foul. The player who fouled loses and the game ends.",
+          "If a Dobon and a foul happen together, the Dobon takes priority."
+        ]
+      },
+      {
+        "heading": "End of the game",
+        "items": [
+          "The game ends on a Dobon or a foul. If the deck runs out and a player cannot draw, it is a no contest."
+        ]
+      }
+    ]
+  }
+}
