@@ -1,14 +1,21 @@
-import { getMessages } from '@dobon/i18n';
+import { useState } from 'react';
+import { GameScreen } from './screens/GameScreen';
+import { HomeScreen } from './screens/HomeScreen';
+
+type Screen = 'home' | 'game';
 
 export function App() {
-  const m = getMessages();
-  return (
-    <main className="home">
-      <h1 className="home__title">{m.app.title}</h1>
-      {/* M0:押しても何も起きない */}
-      <button type="button" className="home__button">
-        {m.home.playVsCpu}
-      </button>
-    </main>
+  const [screen, setScreen] = useState<Screen>('home');
+  // 「ホームへ」→「CPUと対戦」のたびに、新しい対戦(新しい配り)にするため、key で作り直す
+  const [round, setRound] = useState(0);
+  return screen === 'home' ? (
+    <HomeScreen
+      onPlay={() => {
+        setRound((n) => n + 1);
+        setScreen('game');
+      }}
+    />
+  ) : (
+    <GameScreen key={round} onExit={() => setScreen('home')} />
   );
 }
