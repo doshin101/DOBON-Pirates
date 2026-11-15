@@ -5,3 +5,4 @@ export * from './rng';
 export * from './checks';
 export * from './game';
 export * from './view';
+export * from './params';

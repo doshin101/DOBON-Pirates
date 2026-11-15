@@ -4,5 +4,74 @@
   },
   "home": {
     "playVsCpu": "CPUと対戦"
+  },
+  "players": {
+    "you": "あなた",
+    "cpu1": "CPU 1(左)",
+    "cpu2": "CPU 2(上)",
+    "cpu3": "CPU 3(右)"
+  },
+  "game": {
+    "deckCount": "山札 {count}",
+    "menu": "ホームへ戻る",
+    "confirmQuit": "対戦をやめて、ホームに戻りますか?",
+    "yourTurn": "あなたの番です",
+    "turnOf": "{name} の番",
+    "startingTopCard": "最初の場札(ドボンの対象外)",
+    "playedBy": "{name} がプレイ",
+    "total": "合計",
+    "dealer": "親",
+    "armedBadge": "張り",
+    "cardCount": "{count}枚"
+  },
+  "buttons": {
+    "play": "プレイ",
+    "draw": "ドロー",
+    "pass": "パス",
+    "arm": "張る"
+  },
+  "reasons": {
+    "notYourTurn": "自分の番ではありません",
+    "mustDrawFirst": "手札が1枚のときは先にドロー",
+    "noPlayableCard": "出せるカードがありません",
+    "hasPlayableCard": "出せるカードがあります",
+    "alreadyDrew": "ドローは1回だけ",
+    "drawFirst": "ドローの後だけ",
+    "totalTooHigh": "合計が14以上",
+    "armOnlyOwnTurn": "自分のターンのみ",
+    "alreadyArmed": "張り済み",
+    "resolutionPending": "判定中"
+  },
+  "log": {
+    "title": "ログ",
+    "empty": "まだありません",
+    "gameStarted": "ゲーム開始。親は{name}",
+    "topCard": "最初の場札は {card}",
+    "played": "{name} が {card} をプレイ",
+    "drew": "{name} がドロー",
+    "drewOwn": "{name} が {card} をドロー",
+    "passed": "{name} がパス"
+  },
+  "result": {
+    "noContest": "引き分け",
+    "toHome": "ホームへ"
+  },
+  "cards": {
+    "suits": { "S": "♠", "H": "♥", "D": "♦", "C": "♣" },
+    "ranks": {
+      "1": "A",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "11": "J",
+      "12": "Q",
+      "13": "K"
+    }
   }
 }
