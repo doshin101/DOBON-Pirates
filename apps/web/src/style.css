@@ -11,6 +11,8 @@
 * { box-sizing: border-box; }
 
 html, body { height: 100%; }
+/* アプリとして開いたとき、下に引っぱって再読み込み(ゲームが消える)ことがないようにする */
+html, body { overscroll-behavior: none; }
 
 body {
   margin: 0;
@@ -126,8 +128,8 @@ button { font: inherit; color: inherit; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 44px;
-  padding: 0 4px 0 0;
+  height: calc(44px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) 4px 0 0;
   border-bottom: 1px solid var(--line);
   background: #fff;
   font-size: 12px;
@@ -251,7 +253,7 @@ button { font: inherit; color: inherit; }
 }
 .main--dobon small { color: #fff; }
 
-.log { border-top: 1px solid var(--line); background: #fff; font-size: 11px; color: var(--sub); }
+.log { padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid var(--line); background: #fff; font-size: 11px; color: var(--sub); }
 .log__toggle {
   display: block;
   width: 100%;
