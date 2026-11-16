@@ -2,6 +2,7 @@
 
 トランプゲーム「ドボン」を、スマホで遊べるWebゲームにするプロジェクトです。
 
+- **遊ぶ(最新版)**:https://dobon-game.pages.dev/(過去の段階の版は、[`docs/setup/release-stages.md`](docs/setup/release-stages.md))
 - いまの段階:**MVP(ミニマムルールで、CPU3人と1ゲーム)**
 - 作業ルール:[`CLAUDE.md`](CLAUDE.md)
 - ルール:[`docs/rules/minimum.md`](docs/rules/minimum.md)、用語:[`docs/rules/glossary.md`](docs/rules/glossary.md)
@@ -40,6 +41,7 @@ Cloudflare Pages でこのリポジトリをつなぐときに入れる値です
 
 | 項目 | 値 |
 |---|---|
+| Project name(アドレスになる。あとから変えられない) | `dobon-game`(→ `dobon-game.pages.dev`) |
 | Production branch(本番のブランチ) | `main` |
 | Framework preset | なし(None) |
 | Build command(ビルドコマンド) | `npm run build` |
